@@ -18,26 +18,34 @@ with open('private_key.txt', 'rb') as key_file:
         backend=default_backend()
     )
 
-input_file = 'dataquantrong.ecryptedQT'
-output_file = 'dataquantrong.txt'
+# Thư mục chứa các file được mã hóa
+folder_path = os.path.expanduser("~/Desktop")
 
-with open(input_file, 'rb') as f:
-    encrypted = f.read()
+# Duyệt qua các file trong thư mục và giải mã chúng
+for filename in os.listdir(folder_path):
+    if filename.endswith(".encryptedqt"):
+        input_file = os.path.join(folder_path, filename)
+        output_file = os.path.join(folder_path, filename[:-12] + '.txt')  # Loại bỏ phần mở rộng EncryptedQT
 
-# giai ma
-decrypted = private_key.decrypt(
-    encrypted,
-    padding.OAEP(
-        mgf=padding.MGF1(algorithm=hashes.SHA256()),
-        algorithm=hashes.SHA256(),
-        label=None
-    )
-)
+        with open(input_file, 'rb') as f:
+            encrypted = f.read()
 
-# ghi lai vao file data.txt giong nhu ban dau
-with open(output_file, 'wb') as f:
-    f.write(decrypted)
+        # Giải mã
+        decrypted = private_key.decrypt(
+            encrypted,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
 
-os.remove(input_file)
+        # Ghi dữ liệu đã giải mã vào file mới
+        with open(output_file, 'wb') as f:
+            f.write(decrypted)
+
+        # Xóa file đã mã hóa sau khi đã giải mã
+        os.remove(input_file)
+
 os.remove('private_key.txt')
 os.remove('README.txt')

